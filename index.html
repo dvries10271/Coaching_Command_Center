@@ -353,6 +353,27 @@
             gap: 0.5rem;
         }
 
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 2px solid var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: auto;
+        }
+
+        .footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: var(--success-green);
+            text-decoration: underline;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .dashboard-grid {
@@ -615,6 +636,11 @@
                 </div>
             </div>
         </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Lead Generation Experts LLC © All Rights Reserved <span id="currentYear"></span> | <a href="privacy.html">Privacy Policy</a></p>
+        </footer>
     </div>
 
     <script>
@@ -642,6 +668,13 @@
             
             // Add form submit handler
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // Set current year in footer
+            const currentYear = new Date().getFullYear();
+            const yearElement = document.getElementById('currentYear');
+            if (yearElement) {
+                yearElement.textContent = currentYear;
+            }
         });
 
         // Check if user is already authenticated
