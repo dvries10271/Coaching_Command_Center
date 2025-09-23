@@ -179,10 +179,16 @@
         /* Dashboard Grid */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
             padding: 2rem;
             flex-grow: 1;
+        }
+        
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         .module-card {
@@ -345,6 +351,12 @@
         }
 
         /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
         @media (max-width: 768px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
@@ -473,15 +485,16 @@
                     </div>
                 </div>
                 <div class="module-actions">
-                    <a href="https://dvries10271.github.io/warrior-voice-assessment/" 
+                    <!-- View Results button hidden for now -->
+                    <!-- <a href="https://dvries10271.github.io/warrior-voice-assessment/" 
                        class="action-btn" 
                        onclick="launchModule(event, 'assessment', this.href)">
                         View Results
-                    </a>
+                    </a> -->
                     <a href="https://dvries10271.github.io/warrior-voice-assessment/" 
                        class="action-btn primary" 
                        onclick="launchModule(event, 'assessment', this.href)">
-                        Retake
+                        Take Assessment
                     </a>
                 </div>
             </div>
@@ -530,11 +543,12 @@
                     </div>
                 </div>
                 <div class="module-actions">
-                    <a href="https://dvries10271.github.io/monthly-fact-map/" 
+                    <!-- View History button hidden for now -->
+                    <!-- <a href="https://dvries10271.github.io/monthly-fact-map/" 
                        class="action-btn" 
                        onclick="launchModule(event, 'fact-map', this.href)">
                         View History
-                    </a>
+                    </a> -->
                     <a href="https://dvries10271.github.io/monthly-fact-map/" 
                        class="action-btn primary" 
                        onclick="launchModule(event, 'fact-map', this.href)">
@@ -561,15 +575,16 @@
                     </div>
                 </div>
                 <div class="module-actions">
-                    <a href="https://dvries10271.github.io/quarterly_impossible_game/" 
+                    <!-- View Goals button hidden for now -->
+                    <!-- <a href="https://dvries10271.github.io/quarterly_impossible_game/" 
                        class="action-btn" 
                        onclick="launchModule(event, 'quarterly', this.href)">
                         View Goals
-                    </a>
+                    </a> -->
                     <a href="https://dvries10271.github.io/quarterly_impossible_game/" 
                        class="action-btn primary" 
                        onclick="launchModule(event, 'quarterly', this.href)">
-                        Update
+                        Set Goals
                     </a>
                 </div>
             </div>
