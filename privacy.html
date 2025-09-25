@@ -3,41 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - Lead Generation Experts LLC</title>
+    <title>Coaching Command Center - Unified Dashboard</title>
     <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #1e1e2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent-blue: #667eea;
+            --accent-purple: #764ba2;
+            --success-green: #4caf50;
+            --warning-yellow: #ffc107;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --bg-primary: #1a1a2e;
-            --bg-secondary: #16213e;
-            --text-primary: #e8e8e8;
-            --text-secondary: #b8b8b8;
-            --accent-blue: #4a7c9e;
-            --success-green: #53bf9d;
-            --border-color: #2a3f5f;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary), #0f0f1e);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
             color: var(--text-primary);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            line-height: 1.6;
         }
 
+        /* Login Container */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .login-container.hidden {
+            display: none;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--accent-blue), var(--success-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-green), var(--accent-blue));
+            color: white;
+        }
+
+        /* Main Dashboard */
+        .dashboard-container {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .dashboard-container.active {
+            display: flex;
+        }
+
+        /* Header */
         .header {
             background: var(--bg-secondary);
             padding: 1.5rem 2rem;
-            border-bottom: 2px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 2px solid var(--border-color);
         }
 
         .header h1 {
@@ -47,307 +133,441 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .back-btn {
-            background: var(--bg-primary);
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-right: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            background: var(--bg-card);
             color: var(--text-primary);
+            padding: 0.5rem 1rem;
             border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            padding: 2rem;
+            background: var(--bg-card);
+            margin: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .welcome-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .personality-badges {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .personality-badge {
+            background: rgba(255, 255, 255, 0.05);
             padding: 0.5rem 1rem;
             border-radius: 6px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
+            border: 1px solid var(--border-color);
         }
 
-        .back-btn:hover {
-            background: var(--accent-blue);
-            border-color: var(--accent-blue);
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 2rem;
-            flex-grow: 1;
-        }
-
-        .privacy-content {
-            background: var(--bg-secondary);
-            padding: 3rem;
+        .module-card {
+            background: var(--bg-card);
             border-radius: 12px;
-            border: 2px solid var(--border-color);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .privacy-content h2 {
-            color: var(--accent-blue);
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .privacy-content h2:first-child {
-            margin-top: 0;
+        .module-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
-        .privacy-content h3 {
-            color: var(--success-green);
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-            font-size: 1.2rem;
+        .module-card:hover::before {
+            opacity: 1;
         }
 
-        .privacy-content p {
-            margin-bottom: 1rem;
-            color: var(--text-secondary);
+        .module-card.new-module::after {
+            content: 'NEW';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #FF6B6B, #FF9F43);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
         }
 
-        .privacy-content ul {
-            margin-bottom: 1rem;
-            margin-left: 2rem;
-            color: var(--text-secondary);
-        }
-
-        .privacy-content li {
+        .module-icon {
+            font-size: 2.5rem;
             margin-bottom: 0.5rem;
         }
 
-        .privacy-content a {
-            color: var(--accent-blue);
-            text-decoration: none;
+        .module-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
-        .privacy-content a:hover {
-            text-decoration: underline;
-            color: var(--success-green);
-        }
-
-        .effective-date {
-            background: var(--bg-primary);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            border-left: 4px solid var(--accent-blue);
-        }
-
-        .footer {
-            background: var(--bg-secondary);
-            border-top: 2px solid var(--border-color);
-            padding: 2rem;
-            text-align: center;
+        .module-description {
             color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
 
-        .footer a {
+        .module-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--success-green);
+        }
+
+        .status-coming-soon {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning-yellow);
+        }
+
+        .module-link {
             color: var(--accent-blue);
             text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
         }
 
-        .footer a:hover {
-            color: var(--success-green);
-            text-decoration: underline;
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
+            .dashboard-grid {
+                grid-template-columns: 1fr;
             }
-
-            .privacy-content {
-                padding: 1.5rem;
-            }
-
+            
             .header {
                 flex-direction: column;
                 gap: 1rem;
-                text-align: center;
+            }
+            
+            .personality-badges {
+                flex-direction: column;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <h1>Privacy Policy</h1>
-        <a href="index.html" class="back-btn">
-            ← Back to Dashboard
-        </a>
-    </div>
-
-    <!-- Content -->
-    <div class="container">
-        <div class="privacy-content">
-            <div class="effective-date">
-                <strong>Effective Date:</strong> <span id="effectiveDate"></span><br>
-                <strong>Last Updated:</strong> <span id="lastUpdated"></span>
-            </div>
-
-            <h2>1. Introduction</h2>
-            <p>
-                Lead Generation Experts LLC ("we," "our," or "us") operates the Coaching Command Center platform. 
-                This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you 
-                use our platform and services.
-            </p>
-            <p>
-                By using our services, you consent to the data practices described in this policy. If you do not 
-                agree with the data practices described in this policy, you should not use our services.
-            </p>
-
-            <h2>2. Information We Collect</h2>
+    <!-- Login Container -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-card">
+            <h2 class="login-title">Coaching Command Center</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Sign in to access your coaching dashboard</p>
             
-            <h3>2.1 Personal Information</h3>
-            <p>We may collect personally identifiable information that you voluntarily provide, including:</p>
-            <ul>
-                <li>Name and email address</li>
-                <li>Personality assessment results (Kolbe scores, Color Code profiles)</li>
-                <li>Stack session data and coaching insights</li>
-                <li>Goal-setting and progress tracking information</li>
-                <li>Account credentials and authentication data</li>
-            </ul>
-
-            <h3>2.2 Usage Information</h3>
-            <p>We automatically collect certain information when you use our platform:</p>
-            <ul>
-                <li>Log data (IP address, browser type, access times)</li>
-                <li>Device information (device type, operating system)</li>
-                <li>Session activity and feature usage patterns</li>
-                <li>Performance metrics and error reports</li>
-            </ul>
-
-            <h2>3. How We Use Your Information</h2>
-            <p>We use the collected information for various purposes:</p>
-            <ul>
-                <li>To provide and maintain our coaching services</li>
-                <li>To personalize your coaching experience based on your assessment results</li>
-                <li>To process and analyze your Stack Sessions for insights and action items</li>
-                <li>To track your progress and provide performance analytics</li>
-                <li>To communicate with you about your account and services</li>
-                <li>To improve our platform and develop new features</li>
-                <li>To detect, prevent, and address technical issues</li>
-            </ul>
-
-            <h2>4. Data Storage and Security</h2>
-            <p>
-                Your data is securely stored using industry-standard encryption and security measures. We use 
-                Airtable for database storage and n8n for workflow processing, both configured with appropriate 
-                security controls.
-            </p>
-            <p>
-                While we implement commercially reasonable security measures, no method of transmission over the 
-                Internet or electronic storage is 100% secure. We strive to protect your personal information but 
-                cannot guarantee absolute security.
-            </p>
-
-            <h2>5. Data Sharing and Disclosure</h2>
-            <p>We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:</p>
-            <ul>
-                <li>With your explicit consent</li>
-                <li>To comply with legal obligations or respond to lawful requests</li>
-                <li>To protect our rights, privacy, safety, or property</li>
-                <li>With service providers who assist in operating our platform (under strict confidentiality agreements)</li>
-                <li>In connection with a merger, acquisition, or sale of assets (with notice to users)</li>
-            </ul>
-
-            <h2>6. AI Processing and Analysis</h2>
-            <p>
-                We use artificial intelligence (OpenAI GPT-4) to analyze your Stack Sessions and provide personalized 
-                coaching insights. Your data is processed securely, and we do not use your personal information to 
-                train external AI models.
-            </p>
-
-            <h2>7. Your Rights and Choices</h2>
-            <p>You have the following rights regarding your personal information:</p>
-            <ul>
-                <li><strong>Access:</strong> Request a copy of your personal data</li>
-                <li><strong>Correction:</strong> Request correction of inaccurate data</li>
-                <li><strong>Deletion:</strong> Request deletion of your account and associated data</li>
-                <li><strong>Portability:</strong> Request your data in a machine-readable format</li>
-                <li><strong>Opt-out:</strong> Opt-out of certain communications or data processing</li>
-            </ul>
-            <p>To exercise these rights, please contact us at the email provided below.</p>
-
-            <h2>8. Data Retention</h2>
-            <p>
-                We retain your personal information for as long as your account is active or as needed to provide 
-                you services. We will retain and use your information as necessary to comply with our legal 
-                obligations, resolve disputes, and enforce our agreements.
-            </p>
-
-            <h2>9. Children's Privacy</h2>
-            <p>
-                Our services are not intended for children under 18 years of age. We do not knowingly collect 
-                personal information from children under 18. If we become aware that we have collected personal 
-                information from a child under 18, we will take steps to delete such information.
-            </p>
-
-            <h2>10. International Data Transfers</h2>
-            <p>
-                Your information may be transferred to and maintained on servers located outside of your state, 
-                province, country, or other governmental jurisdiction. We ensure appropriate safeguards are in 
-                place for such transfers.
-            </p>
-
-            <h2>11. Cookies and Tracking Technologies</h2>
-            <p>
-                We use browser localStorage for authentication and session management. This is essential for the 
-                platform to function properly. You can clear this data through your browser settings, but doing so 
-                will require you to log in again.
-            </p>
-
-            <h2>12. Changes to This Privacy Policy</h2>
-            <p>
-                We may update our Privacy Policy from time to time. We will notify you of any changes by posting 
-                the new Privacy Policy on this page and updating the "Last Updated" date. You are advised to review 
-                this Privacy Policy periodically for any changes.
-            </p>
-
-            <h2>13. Contact Information</h2>
-            <p>If you have questions or concerns about this Privacy Policy, please contact us at:</p>
-            <p>
-                <strong>Lead Generation Experts LLC</strong><br>
-                Email: <a href="mailto:scott@confluence-solutions.com">scott@confluence-solutions.com</a><br>
-                Website: <a href="https://confluence-solutions.com" target="_blank">confluence-solutions.com</a>
-            </p>
-
-            <h2>14. California Privacy Rights</h2>
-            <p>
-                If you are a California resident, you have additional rights under the California Consumer Privacy 
-                Act (CCPA), including the right to know what personal information we collect, the right to delete 
-                your information, and the right to opt-out of the sale of your information (which we do not do).
-            </p>
-
-            <h2>15. GDPR Compliance</h2>
-            <p>
-                For users in the European Economic Area (EEA), we comply with the General Data Protection Regulation 
-                (GDPR). We process personal data only with your consent or where we have legitimate interests to do so.
-            </p>
+            <form class="login-form" onsubmit="login(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-input" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-success">
+                    Sign In
+                </button>
+            </form>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>Lead Generation Experts LLC © All Rights Reserved <span id="currentYear"></span></p>
-    </footer>
+    <!-- Main Dashboard -->
+    <div class="dashboard-container" id="dashboard">
+        <!-- Header -->
+        <div class="header">
+            <h1>Coaching Command Center</h1>
+            <div class="header-actions">
+                <div class="user-info">
+                    <span id="userName">Guest</span>
+                    <span id="userEmail">user@example.com</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h2 class="welcome-title">Welcome back, <span id="welcomeName">User</span>!</h2>
+            <div class="personality-badges">
+                <div class="personality-badge">
+                    <span>🎯 Kolbe:</span>
+                    <span id="kolbeProfile">5-6-3-7</span>
+                </div>
+                <div class="personality-badge">
+                    <span>🎨 Color:</span>
+                    <span id="colorProfile">White/Red</span>
+                </div>
+                <div class="personality-badge">
+                    <span>📊 Completion:</span>
+                    <span id="completionRate">73%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Analytics & Insights Module (NEW) -->
+            <div class="module-card new-module" onclick="openModule('https://dvries10271.github.io/coaching-dashboard-stats/')">
+                <div class="module-icon">📊</div>
+                <h3 class="module-title">Analytics & Insights</h3>
+                <p class="module-description">
+                    Real-time performance metrics and insights across all your coaching activities. 
+                    Track progress, identify patterns, and optimize your growth journey.
+                </p>
+                <div class="module-status">
+                    <span class="status-badge status-active">Active</span>
+                    <span class="module-link">Launch Dashboard →</span>
+                </div>
+            </div>
+
+            <!-- Action Command Center -->
+            <div class="module-card" onclick="openModule('https://dvries10271.github.io/action-command-center/')">
+                <div class="module-icon">📋</div>
+                <h3 class="module-title">Action Command Center</h3>
+                <p class="module-description">
+                    Your central hub for managing all actions extracted from Stack Sessions. 
+                    Organize tasks across TO DO, IN ACTION, SIGNAL, and NOISE columns.
+                </p>
+                <div class="module-status">
+                    <span class="status-badge status-active">Active</span>
+                    <span class="module-link">Open Module →</span>
+                </div>
+            </div>
+
+            <!-- Stack Sessions -->
+            <div class="module-card" onclick="openModule('https://dvries10271.github.io/stack-sessions/')">
+                <div class="module-icon">📝</div>
+                <h3 class="module-title">Stack Sessions</h3>
+                <p class="module-description">
+                    Daily practice tool for processing thoughts, emotions, and revelations. 
+                    Submit audio or text entries for AI-powered coaching insights.
+                </p>
+                <div class="module-status">
+                    <span class="status-badge status-active">Active</span>
+                    <span class="module-link">Start Session →</span>
+                </div>
+            </div>
+
+            <!-- Personality Assessment -->
+            <div class="module-card" onclick="openModule('https://dvries10271.github.io/personality-assessments/')">
+                <div class="module-icon">🎭</div>
+                <h3 class="module-title">Personality Assessment</h3>
+                <p class="module-description">
+                    Complete Kolbe A and Color Code assessments to unlock personalized coaching. 
+                    Understand your natural strengths and operating style.
+                </p>
+                <div class="module-status">
+                    <span class="status-badge status-active">Active</span>
+                    <span class="module-link">Take Assessment →</span>
+                </div>
+            </div>
+
+            <!-- Monthly Fact Maps -->
+            <div class="module-card" onclick="openModule('https://dvries10271.github.io/fact-map-processor/')">
+                <div class="module-icon">🗺️</div>
+                <h3 class="module-title">Monthly Fact Maps</h3>
+                <p class="module-description">
+                    Monthly review process to capture facts, insights, and pattern across 
+                    Body, Being, Balance, and Business domains.
+                </p>
+                <div class="module-status">
+                    <span class="status-badge status-active">Active</span>
+                    <span class="module-link">Create Map →</span>
+                </div>
+            </div>
+
+            <!-- Quarterly Impossible Game -->
+            <div class="module-card" onclick="openModule('https://dvries10271.github.io/quarterly-impossible-game/')">
+                <div class="module-icon">🎯</div>
+                <h3 class="module-title">Quarterly Impossible Game</h3>
+                <p class="module-description">
+                    Set and track breakthrough goals each quarter. Push beyond limitations 
+                    with structured accountability and progress tracking.
+                </p>
+                <div class="module-status">
+                    <span class="status-badge status-active">Active</span>
+                    <span class="module-link">Set Goals →</span>
+                </div>
+            </div>
+
+            <!-- Weekly Planning -->
+            <div class="module-card" onclick="openModule('#')">
+                <div class="module-icon">📅</div>
+                <h3 class="module-title">Weekly Planning</h3>
+                <p class="module-description">
+                    Strategic weekly planning tool to set priorities, schedule key activities, 
+                    and ensure alignment with quarterly goals.
+                </p>
+                <div class="module-status">
+                    <span class="status-badge status-coming-soon">Coming Soon</span>
+                    <span class="module-link">Preview →</span>
+                </div>
+            </div>
+
+            <!-- AI Coaching Chat -->
+            <div class="module-card" onclick="openModule('#')">
+                <div class="module-icon">🤖</div>
+                <h3 class="module-title">AI Coaching Chat</h3>
+                <p class="module-description">
+                    24/7 access to your personalized AI coach. Get real-time guidance, 
+                    accountability, and support based on your data.
+                </p>
+                <div class="module-status">
+                    <span class="status-badge status-coming-soon">Coming Soon</span>
+                    <span class="module-link">Preview →</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Set dynamic dates
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentYear = new Date().getFullYear();
-            const currentDate = new Date().toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
-            
-            // Set current year in footer
-            document.getElementById('currentYear').textContent = currentYear;
-            
-            // Set effective date (you can change this to your actual launch date)
-            document.getElementById('effectiveDate').textContent = 'January 1, ' + currentYear;
-            
-            // Set last updated date to current date
-            document.getElementById('lastUpdated').textContent = currentDate;
+        // Check authentication on load
+        window.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
         });
+
+        // Authentication check
+        function checkAuth() {
+            const userEmail = localStorage.getItem('coaching_user_email');
+            const userData = localStorage.getItem('coaching_user_data');
+            
+            if (userEmail && userData) {
+                const user = JSON.parse(userData);
+                showDashboard(user);
+            } else {
+                document.getElementById('loginContainer').classList.remove('hidden');
+                document.getElementById('dashboard').classList.remove('active');
+            }
+        }
+
+        // Login function
+        function login(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Store user data (in production, this would validate against a backend)
+            const userData = {
+                email: email,
+                name: email.split('@')[0],
+                kolbe: '5-6-3-7',
+                color: 'White/Red',
+                completion: 73
+            };
+            
+            localStorage.setItem('coaching_user_email', email);
+            localStorage.setItem('coaching_user_data', JSON.stringify(userData));
+            
+            showDashboard(userData);
+        }
+
+        // Show dashboard
+        function showDashboard(user) {
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('active');
+            
+            // Update user info
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('welcomeName').textContent = user.name;
+            document.getElementById('kolbeProfile').textContent = user.kolbe || '5-6-3-7';
+            document.getElementById('colorProfile').textContent = user.color || 'White/Red';
+            document.getElementById('completionRate').textContent = (user.completion || 0) + '%';
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('coaching_user_email');
+            localStorage.removeItem('coaching_user_data');
+            
+            document.getElementById('loginContainer').classList.remove('hidden');
+            document.getElementById('dashboard').classList.remove('active');
+            
+            // Clear form
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        // Open module
+        function openModule(url) {
+            if (url !== '#') {
+                // Pass authentication token to module
+                const userEmail = localStorage.getItem('coaching_user_email');
+                const userData = localStorage.getItem('coaching_user_data');
+                
+                // Open in new tab with auth preserved
+                window.open(url, '_blank');
+            } else {
+                alert('This module is coming soon!');
+            }
+        }
     </script>
 </body>
 </html>
