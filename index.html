@@ -3,74 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coaching Command Center - Dashboard</title>
+    <title>Coaching Command Center - Unified Dashboard</title>
     <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #1e1e2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent-blue: #667eea;
+            --accent-purple: #764ba2;
+            --success-green: #4caf50;
+            --warning-yellow: #ffc107;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --bg-primary: #1a1a2e;
-            --bg-secondary: #16213e;
-            --bg-card: #0f3460;
-            --text-primary: #e8e8e8;
-            --text-secondary: #b8b8b8;
-            --accent-blue: #4a7c9e;
-            --success-green: #53bf9d;
-            --warning-yellow: #ffc94c;
-            --error-red: #f94c66;
-            --impact-red: #bd4291;
-            --border-color: #2a3f5f;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary), #0f0f1e);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
             color: var(--text-primary);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
-        /* Login Screen */
-        #loginScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, var(--bg-primary), #0f0f1e);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.5s ease;
-        }
-
-        #loginScreen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
+        /* Login Container */
         .login-container {
-            background: var(--bg-secondary);
-            padding: 3rem 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .login-container.hidden {
+            display: none;
+        }
+
+        .login-card {
+            background: var(--bg-card);
             border-radius: 12px;
-            width: 90%;
+            padding: 3rem;
+            width: 100%;
             max-width: 400px;
-            border: 2px solid var(--border-color);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
         }
 
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .login-header h1 {
+        .login-title {
             font-size: 2rem;
+            font-weight: bold;
             background: linear-gradient(135deg, var(--accent-blue), var(--success-green));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -155,181 +141,34 @@
 
         .user-info {
             display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.5rem 1rem;
-            background: var(--bg-primary);
-            border-radius: 8px;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-right: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
         }
 
         .logout-btn {
-            background: var(--error-red);
-            color: white;
+            background: var(--bg-card);
+            color: var(--text-primary);
             padding: 0.5rem 1rem;
-            border: none;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             cursor: pointer;
-            transition: opacity 0.3s;
+            transition: all 0.3s ease;
         }
 
         .logout-btn:hover {
-            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        /* Dashboard Grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(300px, 380px));
-            gap: 2rem;
-            padding: 2rem;
-            flex-grow: 1;
-            justify-content: center;
-        }
-        
-        @media (max-width: 1200px) {
-            .dashboard-grid {
-                grid-template-columns: repeat(2, minmax(250px, 380px));
-            }
-        }
-
-        .module-card {
-            background: var(--bg-secondary);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            max-width: 380px;
-            width: 100%;
-        }
-
-        .module-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border-color: var(--accent-blue);
-        }
-
-        .module-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--success-green), var(--accent-blue));
-        }
-
-        .module-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--accent-blue), var(--success-green));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .module-title {
-            font-size: 1.5rem;
-            margin-bottom: 0.75rem;
-            color: var(--text-primary);
-        }
-
-        .module-description {
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        .module-stats {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .stat-badge {
-            background: var(--bg-primary);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .stat-badge .value {
-            color: var(--success-green);
-            font-weight: bold;
-        }
-
-        .module-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 0.75rem;
-            text-align: center;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .action-btn:hover {
-            background: linear-gradient(135deg, var(--accent-blue), var(--success-green));
-            border-color: transparent;
-        }
-
-        .action-btn.primary {
-            background: linear-gradient(135deg, var(--success-green), var(--accent-blue));
-            border: none;
-        }
-
-        /* Status Indicators */
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 0.5rem;
-        }
-
-        .status-active {
-            background: var(--success-green);
-            box-shadow: 0 0 10px var(--success-green);
-            animation: pulse 2s infinite;
-        }
-
-        .status-pending {
-            background: var(--warning-yellow);
-        }
-
-        .status-new {
-            background: var(--accent-blue);
-            box-shadow: 0 0 10px var(--accent-blue);
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        /* Welcome Message */
+        /* Welcome Section */
         .welcome-section {
             padding: 2rem;
-            background: var(--bg-secondary);
-            border-bottom: 2px solid var(--border-color);
-            text-align: center;
+            background: var(--bg-card);
+            margin: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
         }
 
         .welcome-title {
@@ -339,83 +178,151 @@
 
         .personality-badges {
             display: flex;
-            justify-content: center;
             gap: 1rem;
             flex-wrap: wrap;
         }
 
         .personality-badge {
-            background: var(--bg-primary);
-            padding: 0.75rem 1.5rem;
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .module-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Footer */
-        .footer {
-            background: var(--bg-secondary);
-            border-top: 2px solid var(--border-color);
-            padding: 2rem;
-            text-align: center;
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .module-card:hover::before {
+            opacity: 1;
+        }
+
+        .module-card.new-module::after {
+            content: 'NEW';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #FF6B6B, #FF9F43);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .module-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .module-description {
             color: var(--text-secondary);
-            margin-top: auto;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
 
-        .footer a {
+        .module-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--success-green);
+        }
+
+        .status-coming-soon {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning-yellow);
+        }
+
+        .module-link {
             color: var(--accent-blue);
             text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer a:hover {
-            color: var(--success-green);
-            text-decoration: underline;
+            font-size: 0.9rem;
+            font-weight: 600;
         }
 
         /* Responsive */
-        @media (max-width: 1200px) {
-            .dashboard-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
         @media (max-width: 768px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
-                padding: 1rem;
             }
-
+            
             .header {
                 flex-direction: column;
                 gap: 1rem;
-                padding: 1rem;
             }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .module-card {
-                padding: 1.5rem;
+            
+            .personality-badges {
+                flex-direction: column;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div id="loginScreen">
-        <div class="login-container">
-            <div class="login-header">
-                <h1>Coaching Command Center</h1>
-                <p>Your Comprehensive Transformation Platform</p>
-            </div>
+    <!-- Login Container -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-card">
+            <h2 class="login-title">Coaching Command Center</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Sign in to access your coaching dashboard</p>
             
-            <form class="login-form" id="loginForm">
+            <form class="login-form" onsubmit="login(event)">
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" class="form-input" id="loginEmail" placeholder="your@email.com" required>
+                    <input type="email" class="form-input" id="loginEmail" placeholder="Enter your email" required>
                 </div>
                 
                 <div class="form-group">
@@ -465,373 +372,201 @@
 
         <!-- Dashboard Grid -->
         <div class="dashboard-grid">
+            <!-- Analytics & Insights Module (NEW) -->
+            <div class="module-card new-module" onclick="openModule('https://dvries10271.github.io/coaching-dashboard-stats/')">
+                <div class="module-icon">📊</div>
+                <h3 class="module-title">Analytics & Insights</h3>
+                <p class="module-description">
+                    Real-time performance metrics and insights across all your coaching activities. 
+                    Track progress, identify patterns, and optimize your growth journey.
+                </p>
+                <div class="module-status">
+                    <span class="status-badge status-active">Active</span>
+                    <span class="module-link">Launch Dashboard →</span>
+                </div>
+            </div>
+
             <!-- Action Command Center -->
-            <div class="module-card">
+            <div class="module-card" onclick="openModule('https://dvries10271.github.io/action-command-center/')">
                 <div class="module-icon">📋</div>
                 <h3 class="module-title">Action Command Center</h3>
                 <p class="module-description">
                     Your central hub for managing all actions extracted from Stack Sessions. 
                     Organize tasks across TO DO, IN ACTION, SIGNAL, and NOISE columns.
                 </p>
-                <div class="module-stats">
-                    <div class="stat-badge">
-                        <span class="status-indicator status-active"></span>
-                        <span>Active: <span class="value">12</span></span>
-                    </div>
-                    <div class="stat-badge">
-                        <span>Capacity: <span class="value">15/40 hrs</span></span>
-                    </div>
+                <div class="module-status">
+                    <span class="status-badge status-active">Active</span>
+                    <span class="module-link">Open Module →</span>
                 </div>
-                <div class="module-actions">
-                    <a href="https://dvries10271.github.io/Action-Command-Center/" 
-                       class="action-btn primary" 
-                       onclick="launchModule(event, 'action-center', this.href)">
-                        Launch Dashboard
-                    </a>
+            </div>
+
+            <!-- Stack Sessions -->
+            <div class="module-card" onclick="openModule('https://dvries10271.github.io/stack-sessions/')">
+                <div class="module-icon">📝</div>
+                <h3 class="module-title">Stack Sessions</h3>
+                <p class="module-description">
+                    Daily practice tool for processing thoughts, emotions, and revelations. 
+                    Submit audio or text entries for AI-powered coaching insights.
+                </p>
+                <div class="module-status">
+                    <span class="status-badge status-active">Active</span>
+                    <span class="module-link">Start Session →</span>
                 </div>
             </div>
 
             <!-- Personality Assessment -->
-            <div class="module-card">
-                <div class="module-icon">🧠</div>
+            <div class="module-card" onclick="openModule('https://dvries10271.github.io/personality-assessments/')">
+                <div class="module-icon">🎭</div>
                 <h3 class="module-title">Personality Assessment</h3>
                 <p class="module-description">
-                    Complete your comprehensive personality assessment to unlock personalized 
-                    coaching insights based on Kolbe and Color Code systems.
+                    Complete Kolbe A and Color Code assessments to unlock personalized coaching. 
+                    Understand your natural strengths and operating style.
                 </p>
-                <div class="module-stats">
-                    <div class="stat-badge">
-                        <span class="status-indicator status-active"></span>
-                        <span>Status: <span class="value">Complete</span></span>
-                    </div>
-                    <div class="stat-badge">
-                        <span>Last: <span class="value">Sep 15</span></span>
-                    </div>
-                </div>
-                <div class="module-actions">
-                    <!-- View Results button hidden for now -->
-                    <!-- <a href="https://dvries10271.github.io/warrior-voice-assessment/" 
-                       class="action-btn" 
-                       onclick="launchModule(event, 'assessment', this.href)">
-                        View Results
-                    </a> -->
-                    <a href="https://dvries10271.github.io/warrior-voice-assessment/" 
-                       class="action-btn primary" 
-                       onclick="launchModule(event, 'assessment', this.href)">
-                        Take Assessment
-                    </a>
+                <div class="module-status">
+                    <span class="status-badge status-active">Active</span>
+                    <span class="module-link">Take Assessment →</span>
                 </div>
             </div>
 
-            <!-- Stack Session Forms -->
-            <div class="module-card">
-                <div class="module-icon">📝</div>
-                <h3 class="module-title">Daily Stack Sessions</h3>
+            <!-- Monthly Fact Maps -->
+            <div class="module-card" onclick="openModule('https://dvries10271.github.io/fact-map-processor/')">
+                <div class="module-icon">🗺️</div>
+                <h3 class="module-title">Monthly Fact Maps</h3>
                 <p class="module-description">
-                    Submit your daily Stack Sessions (Prayer, WAR, Discover, etc.) 
-                    and receive AI-powered coaching insights and action extraction.
+                    Monthly review process to capture facts, insights, and pattern across 
+                    Body, Being, Balance, and Business domains.
                 </p>
-                <div class="module-stats">
-                    <div class="stat-badge">
-                        <span class="status-indicator status-pending"></span>
-                        <span>Today: <span class="value">Not Started</span></span>
-                    </div>
-                    <div class="stat-badge">
-                        <span>Streak: <span class="value">7 days</span></span>
-                    </div>
-                </div>
-                <div class="module-actions">
-                    <a href="https://dvries10271.github.io/session-form-submit/" 
-                       class="action-btn primary" 
-                       onclick="launchModule(event, 'stack-session', this.href)">
-                        Start Session
-                    </a>
-                </div>
-            </div>
-
-            <!-- Monthly Fact Map -->
-            <div class="module-card">
-                <div class="module-icon">📊</div>
-                <h3 class="module-title">Monthly Fact Map</h3>
-                <p class="module-description">
-                    Reflect on your monthly progress across all domains. 
-                    Identify patterns, victories, and areas for improvement.
-                </p>
-                <div class="module-stats">
-                    <div class="stat-badge">
-                        <span class="status-indicator status-new"></span>
-                        <span>Due: <span class="value">Oct 1</span></span>
-                    </div>
-                    <div class="stat-badge">
-                        <span>Domains: <span class="value">4/4</span></span>
-                    </div>
-                </div>
-                <div class="module-actions">
-                    <!-- View History button hidden for now -->
-                    <!-- <a href="https://dvries10271.github.io/monthly-fact-map/" 
-                       class="action-btn" 
-                       onclick="launchModule(event, 'fact-map', this.href)">
-                        View History
-                    </a> -->
-                    <a href="https://dvries10271.github.io/monthly-fact-map/" 
-                       class="action-btn primary" 
-                       onclick="launchModule(event, 'fact-map', this.href)">
-                        Create Map
-                    </a>
+                <div class="module-status">
+                    <span class="status-badge status-active">Active</span>
+                    <span class="module-link">Create Map →</span>
                 </div>
             </div>
 
             <!-- Quarterly Impossible Game -->
-            <div class="module-card">
+            <div class="module-card" onclick="openModule('https://dvries10271.github.io/quarterly-impossible-game/')">
                 <div class="module-icon">🎯</div>
                 <h3 class="module-title">Quarterly Impossible Game</h3>
                 <p class="module-description">
-                    Set and track your 90-day impossible goals across Business, 
-                    Body, Being, and Balance domains.
+                    Set and track breakthrough goals each quarter. Push beyond limitations 
+                    with structured accountability and progress tracking.
                 </p>
-                <div class="module-stats">
-                    <div class="stat-badge">
-                        <span class="status-indicator status-active"></span>
-                        <span>Q4: <span class="value">70 days left</span></span>
-                    </div>
-                    <div class="stat-badge">
-                        <span>Progress: <span class="value">43%</span></span>
-                    </div>
-                </div>
-                <div class="module-actions">
-                    <!-- View Goals button hidden for now -->
-                    <!-- <a href="https://dvries10271.github.io/quarterly_impossible_game/" 
-                       class="action-btn" 
-                       onclick="launchModule(event, 'quarterly', this.href)">
-                        View Goals
-                    </a> -->
-                    <a href="https://dvries10271.github.io/quarterly_impossible_game/" 
-                       class="action-btn primary" 
-                       onclick="launchModule(event, 'quarterly', this.href)">
-                        Set Goals
-                    </a>
+                <div class="module-status">
+                    <span class="status-badge status-active">Active</span>
+                    <span class="module-link">Set Goals →</span>
                 </div>
             </div>
 
-            <!-- Coming Soon: Analytics -->
-            <div class="module-card" style="opacity: 0.6;">
-                <div class="module-icon">📈</div>
-                <h3 class="module-title">Analytics & Insights</h3>
+            <!-- Weekly Planning -->
+            <div class="module-card" onclick="openModule('#')">
+                <div class="module-icon">📅</div>
+                <h3 class="module-title">Weekly Planning</h3>
                 <p class="module-description">
-                    Coming Soon: Advanced pattern recognition, breakthrough predictions, 
-                    and personalized recommendations based on your data.
+                    Strategic weekly planning tool to set priorities, schedule key activities, 
+                    and ensure alignment with quarterly goals.
                 </p>
-                <div class="module-stats">
-                    <div class="stat-badge">
-                        <span>Status: <span class="value">In Development</span></span>
-                    </div>
-                    <div class="stat-badge">
-                        <span>Launch: <span class="value">Q1 2026</span></span>
-                    </div>
+                <div class="module-status">
+                    <span class="status-badge status-coming-soon">Coming Soon</span>
+                    <span class="module-link">Preview →</span>
                 </div>
-                <div class="module-actions">
-                    <button class="action-btn" disabled style="opacity: 0.5;">
-                        Coming Soon
-                    </button>
+            </div>
+
+            <!-- AI Coaching Chat -->
+            <div class="module-card" onclick="openModule('#')">
+                <div class="module-icon">🤖</div>
+                <h3 class="module-title">AI Coaching Chat</h3>
+                <p class="module-description">
+                    24/7 access to your personalized AI coach. Get real-time guidance, 
+                    accountability, and support based on your data.
+                </p>
+                <div class="module-status">
+                    <span class="status-badge status-coming-soon">Coming Soon</span>
+                    <span class="module-link">Preview →</span>
                 </div>
             </div>
         </div>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p>Lead Generation Experts LLC © All Rights Reserved <span id="currentYear"></span> | <a href="privacy.html">Privacy Policy</a></p>
-        </footer>
     </div>
 
     <script>
-        // Configuration
-        const CONFIG = {
-            API_ENDPOINT: 'https://n8n-production-3280.up.railway.app/webhook',
-            TOKEN_KEY: 'coaching_auth_token',
-            USER_KEY: 'coaching_user_data',
-            MODULES: {
-                'action-center': 'coaching_acc_token',
-                'assessment': 'coaching_assess_token',
-                'stack-session': 'coaching_stack_token',
-                'fact-map': 'coaching_map_token',
-                'quarterly': 'coaching_quarterly_token'
-            }
-        };
-
-        // Authentication State
-        let authToken = null;
-        let currentUser = null;
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuthentication();
-            
-            // Add form submit handler
-            document.getElementById('loginForm').addEventListener('submit', handleLogin);
-            
-            // Set current year in footer
-            const currentYear = new Date().getFullYear();
-            const yearElement = document.getElementById('currentYear');
-            if (yearElement) {
-                yearElement.textContent = currentYear;
-            }
+        // Check authentication on load
+        window.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
         });
 
-        // Check if user is already authenticated
-        function checkAuthentication() {
-            const savedToken = localStorage.getItem(CONFIG.TOKEN_KEY);
-            const savedUser = localStorage.getItem(CONFIG.USER_KEY);
+        // Authentication check
+        function checkAuth() {
+            const userEmail = localStorage.getItem('coaching_user_email');
+            const userData = localStorage.getItem('coaching_user_data');
             
-            if (savedToken && savedUser) {
-                try {
-                    authToken = savedToken;
-                    currentUser = JSON.parse(savedUser);
-                    showDashboard();
-                } catch (error) {
-                    console.error('Error parsing saved user data:', error);
-                    clearAuthData();
-                }
+            if (userEmail && userData) {
+                const user = JSON.parse(userData);
+                showDashboard(user);
+            } else {
+                document.getElementById('loginContainer').classList.remove('hidden');
+                document.getElementById('dashboard').classList.remove('active');
             }
         }
 
-        // Handle login
-        async function handleLogin(event) {
+        // Login function
+        function login(event) {
             event.preventDefault();
             
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
-            try {
-                // Call n8n authentication webhook
-                const response = await fetch(`${CONFIG.API_ENDPOINT}/auth/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        authToken = data.token;
-                        currentUser = data.user;
-                        
-                        // Save to localStorage
-                        localStorage.setItem(CONFIG.TOKEN_KEY, authToken);
-                        localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(currentUser));
-                        
-                        // Share token with all modules
-                        shareAuthWithModules();
-                        
-                        showDashboard();
-                    } else {
-                        alert('Login failed: ' + (data.message || 'Invalid credentials'));
-                    }
-                } else {
-                    alert('Login failed. Please check your credentials.');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                alert('Connection error. Please try again.');
-            }
-        }
-
-        // Share authentication with all modules
-        function shareAuthWithModules() {
-            // Store tokens for each module to access
-            Object.entries(CONFIG.MODULES).forEach(([module, key]) => {
-                localStorage.setItem(key, authToken);
-            });
+            // Store user data (in production, this would validate against a backend)
+            const userData = {
+                email: email,
+                name: email.split('@')[0],
+                kolbe: '5-6-3-7',
+                color: 'White/Red',
+                completion: 73
+            };
             
-            // Also store user data for modules
-            localStorage.setItem('coaching_user_email', currentUser.email);
-            localStorage.setItem('coaching_user_name', currentUser.name || 'User');
+            localStorage.setItem('coaching_user_email', email);
+            localStorage.setItem('coaching_user_data', JSON.stringify(userData));
             
-            if (currentUser.profile) {
-                localStorage.setItem('coaching_user_kolbe', currentUser.profile.kolbe || '');
-                localStorage.setItem('coaching_user_color', currentUser.profile.color || '');
-            }
+            showDashboard(userData);
         }
 
         // Show dashboard
-        function showDashboard() {
-            document.getElementById('loginScreen').classList.add('hidden');
+        function showDashboard(user) {
+            document.getElementById('loginContainer').classList.add('hidden');
             document.getElementById('dashboard').classList.add('active');
             
             // Update user info
-            document.getElementById('userName').textContent = currentUser.name || 'User';
-            document.getElementById('userEmail').textContent = currentUser.email;
-            document.getElementById('welcomeName').textContent = currentUser.name || 'User';
-            
-            // Update personality info if available
-            if (currentUser.profile) {
-                if (currentUser.profile.kolbe) {
-                    document.getElementById('kolbeProfile').textContent = currentUser.profile.kolbe;
-                }
-                if (currentUser.profile.color) {
-                    document.getElementById('colorProfile').textContent = currentUser.profile.color;
-                }
-                if (currentUser.profile.completion_rate) {
-                    document.getElementById('completionRate').textContent = currentUser.profile.completion_rate + '%';
-                }
-            }
-            
-            // Load module stats
-            loadModuleStats();
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('welcomeName').textContent = user.name;
+            document.getElementById('kolbeProfile').textContent = user.kolbe || '5-6-3-7';
+            document.getElementById('colorProfile').textContent = user.color || 'White/Red';
+            document.getElementById('completionRate').textContent = (user.completion || 0) + '%';
         }
 
-        // Load module statistics
-        async function loadModuleStats() {
-            // This would fetch real-time stats from your n8n workflow
-            // For now, using placeholder data
-            console.log('Loading module statistics...');
-        }
-
-        // Launch module with authentication
-        function launchModule(event, moduleName, url) {
-            event.preventDefault();
-            
-            // Ensure authentication is shared
-            shareAuthWithModules();
-            
-            // Open in same tab or new tab based on preference
-            // For seamless experience, use same tab:
-            window.location.href = url;
-            
-            // For new tab:
-            // window.open(url, '_blank');
-        }
-
-        // Logout
+        // Logout function
         function logout() {
-            // Clear all authentication data
-            clearAuthData();
+            localStorage.removeItem('coaching_user_email');
+            localStorage.removeItem('coaching_user_data');
             
-            // Reload page to show login
-            window.location.reload();
+            document.getElementById('loginContainer').classList.remove('hidden');
+            document.getElementById('dashboard').classList.remove('active');
+            
+            // Clear form
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
         }
 
-        // Clear authentication data
-        function clearAuthData() {
-            // Clear main auth
-            localStorage.removeItem(CONFIG.TOKEN_KEY);
-            localStorage.removeItem(CONFIG.USER_KEY);
-            
-            // Clear module tokens
-            Object.values(CONFIG.MODULES).forEach(key => {
-                localStorage.removeItem(key);
-            });
-            
-            // Clear user data
-            localStorage.removeItem('coaching_user_email');
-            localStorage.removeItem('coaching_user_name');
-            localStorage.removeItem('coaching_user_kolbe');
-            localStorage.removeItem('coaching_user_color');
-            
-            authToken = null;
-            currentUser = null;
+        // Open module
+        function openModule(url) {
+            if (url !== '#') {
+                // Pass authentication token to module
+                const userEmail = localStorage.getItem('coaching_user_email');
+                const userData = localStorage.getItem('coaching_user_data');
+                
+                // Open in new tab with auth preserved
+                window.open(url, '_blank');
+            } else {
+                alert('This module is coming soon!');
+            }
         }
     </script>
 </body>
