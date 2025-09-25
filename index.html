@@ -40,24 +40,32 @@
             gap: 1rem;
         }
 
+        .user-name {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            margin-right: 0.5rem;
+        }
+
         .user-email {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
         }
 
         .logout-btn {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(239, 68, 68, 0.9);
             color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 0.5rem 1rem;
+            border: none;
+            padding: 0.5rem 1.25rem;
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.9rem;
+            font-weight: 500;
             transition: all 0.3s ease;
         }
 
         .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(239, 68, 68, 1);
+            transform: translateY(-1px);
         }
 
         /* Welcome Section */
@@ -345,6 +353,93 @@
         .dashboard-container.active {
             display: block;
         }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0f 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 4rem;
+            padding: 3rem 2rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer-section p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #667eea;
+        }
+
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        .last-sync {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+
+        .version-info {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -378,7 +473,8 @@
         <div class="header">
             <h1>Coaching Command Center</h1>
             <div class="header-right">
-                <span class="user-email" id="userEmail">user@example.com</span>
+                <span class="user-name" id="userName">Danny de Vries</span>
+                <span class="user-email" id="userEmail">dannydevries@me.com</span>
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
         </div>
@@ -432,7 +528,7 @@
                     </div>
                 </div>
                 <div class="module-action">
-                    <button class="action-btn" onclick="openModule('https://dvries10271.github.io/action-command-center/')">
+                    <button class="action-btn" onclick="openModule('https://dvries10271.github.io/Action-Command-Center/')">
                         Launch Dashboard →
                     </button>
                 </div>
@@ -457,7 +553,7 @@
                     </div>
                 </div>
                 <div class="module-action">
-                    <button class="action-btn" onclick="openModule('https://dvries10271.github.io/personality-assessments/')">
+                    <button class="action-btn" onclick="openModule('https://dvries10271.github.io/warrior-voice-assessment/')">
                         Take Assessment →
                     </button>
                 </div>
@@ -481,7 +577,7 @@
                     Streak: <span style="color: #ffffff; font-weight: 500;" id="stackStreak">7 days</span>
                 </div>
                 <div class="module-action">
-                    <button class="action-btn" onclick="openModule('https://dvries10271.github.io/stack-sessions/')">
+                    <button class="action-btn" onclick="openModule('https://dvries10271.github.io/session-form-submit/')">
                         Start Session →
                     </button>
                 </div>
@@ -506,7 +602,7 @@
                     </div>
                 </div>
                 <div class="module-action">
-                    <button class="action-btn" onclick="openModule('https://dvries10271.github.io/fact-map-processor/')">
+                    <button class="action-btn" onclick="openModule('https://dvries10271.github.io/monthly-fact-map/')">
                         Create Map →
                     </button>
                 </div>
@@ -530,7 +626,7 @@
                     </div>
                 </div>
                 <div class="module-action">
-                    <button class="action-btn" onclick="openModule('https://dvries10271.github.io/quarterly-impossible-game/')">
+                    <button class="action-btn" onclick="openModule('https://dvries10271.github.io/quarterly_impossible_game/')">
                         Set Goals →
                     </button>
                 </div>
@@ -600,6 +696,46 @@
                 </div>
             </div>
         </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Coaching Command Center</h4>
+                    <p>Your integrated platform for personal transformation and peak performance.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://dvries10271.github.io/warrior-voice-assessment/">Personality Assessment</a></li>
+                        <li><a href="https://dvries10271.github.io/session-form-submit/">Stack Sessions</a></li>
+                        <li><a href="https://dvries10271.github.io/Action-Command-Center/">Action Center</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="showPrivacyPolicy()">Privacy Policy</a></li>
+                        <li><a href="#" onclick="showTerms()">Terms of Service</a></li>
+                        <li><a href="#" onclick="showSupport()">Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>System Status</h4>
+                    <div class="status-info">
+                        <span class="status-dot active"></span>
+                        <span>All Systems Operational</span>
+                    </div>
+                    <div class="last-sync">
+                        Last sync: <span id="lastSyncTime">Never</span>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 Warrior Voice Coaching System. Built with purpose.</p>
+                <p class="version-info">Version 9.0 | Updated September 2025</p>
+            </div>
+        </footer>
     </div>
 
     <script>
@@ -659,6 +795,7 @@
             document.getElementById('dashboard').classList.add('active');
             
             // Update user info
+            document.getElementById('userName').textContent = user.name;
             document.getElementById('userEmail').textContent = user.email;
             document.getElementById('welcomeName').textContent = user.name;
             
@@ -706,6 +843,11 @@
 
             const stats = data.stats;
             const insights = data.insights;
+
+            // Update last sync time
+            const now = new Date();
+            document.getElementById('lastSyncTime').textContent = 
+                now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
             // Personality Assessment
             if (stats.assessment) {
@@ -837,6 +979,19 @@
         // Open module
         function openModule(url) {
             window.open(url, '_blank');
+        }
+
+        // Footer functions
+        function showPrivacyPolicy() {
+            alert('Privacy Policy - Your data is protected and never shared with third parties.');
+        }
+
+        function showTerms() {
+            alert('Terms of Service - By using this platform, you agree to our terms.');
+        }
+
+        function showSupport() {
+            window.open('mailto:support@warriorvoice.com', '_blank');
         }
     </script>
 </body>
