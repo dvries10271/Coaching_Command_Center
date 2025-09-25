@@ -274,7 +274,7 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff9f43 100%);
+            background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
             color: white;
             padding: 0.25rem 0.5rem;
             border-radius: 4px;
@@ -618,12 +618,18 @@
                 </p>
                 <div class="module-stats">
                     <div class="stat-item">
+                        <span class="stat-label">Q3:</span>
+                        <span class="stat-value" id="quarterlyStatus">0% Complete</span>
+                    </div>
+                </div>
+                <div class="module-stats">
+                    <div class="stat-item">
                         <span class="stat-label">Q4:</span>
-                        <span class="stat-value" id="quarterlyDays">70 days left</span>
+                        <span class="stat-value" id="quarterlyDays">Starts in 6 days</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-label">Progress:</span>
-                        <span class="stat-value" id="quarterlyProgress">43%</span>
+                        <span class="stat-value" id="quarterlyProgress">0%</span>
                     </div>
                 </div>
                 <div class="module-action">
@@ -635,24 +641,22 @@
 
             <!-- Analytics & Insights -->
             <div class="module-card">
-                <span class="new-badge">NEW</span>
+                <span class="new-badge">LIVE</span>
                 <div class="module-icon">📊</div>
                 <h3 class="module-title">Analytics & Insights</h3>
                 <p class="module-description">
-                    Coming Soon: Advanced pattern recognition, breakthrough predictions, and personalized recommendations based on your data.
+                    Real-time performance metrics and insights across all your coaching activities. Track progress, identify patterns, and optimize your growth journey.
                 </p>
                 <div class="module-stats">
                     <div class="stat-item">
+                        <span class="stat-indicator active"></span>
                         <span class="stat-label">Status:</span>
-                        <span class="stat-value">In Development</span>
+                        <span class="stat-value">Active</span>
                     </div>
-                </div>
-                <div style="margin-top: 0.5rem; font-size: 0.85rem; color: rgba(255, 255, 255, 0.6);">
-                    Launch: <span style="color: #ffffff; font-weight: 500;">Q1 2026</span>
                 </div>
                 <div class="module-action">
                     <button class="action-btn" onclick="openModule('https://dvries10271.github.io/coaching-dashboard-stats/')">
-                        Launch →
+                        Launch Dashboard →
                     </button>
                 </div>
             </div>
@@ -910,8 +914,17 @@
             // Quarterly Goals
             if (stats.quarterly) {
                 const quarterly = stats.quarterly;
-                document.getElementById('quarterlyDays').textContent = 
-                    `${quarterly.daysLeft || 70} days left`;
+                document.getElementById('quarterlyStatus').textContent = 
+                    `${quarterly.progress || 0}% Complete`;
+                    
+                if (stats.nextQuarter) {
+                    document.getElementById('quarterlyDays').textContent = 
+                        `Starts in ${stats.nextQuarter.startsInDays || 6} days`;
+                } else {
+                    document.getElementById('quarterlyDays').textContent = 
+                        `${quarterly.daysLeft || 5} days left`;
+                }
+                
                 document.getElementById('quarterlyProgress').textContent = 
                     `${quarterly.progress || 0}%`;
             }
