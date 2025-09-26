@@ -900,15 +900,19 @@
             if (refreshBtn) refreshBtn.disabled = true;
             
             try {
+                const user = JSON.parse(localStorage.getItem(CONFIG.userDataKey));
+                const userId = user ? user.id : null; // Extract the user's ID
+
                 const response = await fetch(CONFIG.dashboardUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        userEmail: userEmail || localStorage.getItem(CONFIG.userEmailKey)
-                    })
-                });
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // Add the user_id to the body
+                body: JSON.stringify({
+                    userEmail: userEmail || localStorage.getItem(CONFIG.userEmailKey),
+                    user_id: userId // <-- ADD THIS LINE
+                })
 
                 if (response.ok) {
                     const responseData = await response.json();
