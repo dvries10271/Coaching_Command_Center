@@ -786,12 +786,15 @@
     <script>
         // Configuration
         const CONFIG = {
-            webhookUrl: 'https://n8n-production-3280.up.railway.app/webhook/dashboard/load-all-stats',
-            refreshInterval: null // No auto-refresh, only manual and on-load
+            loginUrl: 'https://n8n-production-3280.up.railway.app/webhook/auth/login',
+            dashboardUrl: 'https://n8n-production-3280.up.railway.app/webhook/dashboard/load-all-stats',
+            refreshInterval: null,
+            tokenKey: 'auth_token',
+            userEmailKey: 'coaching_user_email',
+            userDataKey: 'coaching_user_data'
         };
 
         // State
-        let dashboardData = null;
         let isRefreshing = false;
 
         // Check authentication on load
@@ -801,96 +804,88 @@
 
         // Authentication check
         function checkAuth() {
-            const userEmail = localStorage.getItem('coaching_user_email');
-            const userData = localStorage.getItem('coaching_user_data');
+            const userEmail = localStorage.getItem(CONFIG.userEmailKey);
+            const userData = localStorage.getItem(CONFIG.userDataKey);
             
             if (userEmail && userData) {
-                const user = JSON.parse(userData);
-                showDashboard(user);
+                try {
+                    const user = JSON.parse(userData);
+                    showDashboard(user);
+                } catch (e) {
+                    // If parsing fails, treat as logged out
+                    logout();
+                }
             } else {
                 document.getElementById('loginContainer').classList.remove('hidden');
                 document.getElementById('dashboard').classList.remove('active');
             }
         }
 
-        // REPLACE the old login function in index (16).html with this one.
-async function login(event) {
-    event.preventDefault();
-    
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    const loginButton = event.target.querySelector('button[type="submit"]');
-
-    // Disable the button to prevent multiple clicks
-    loginButton.disabled = true;
-    loginButton.textContent = 'Signing In...';
-
-    try {
-        // Define the correct API endpoint from your workflow
-        const loginEndpoint = 'https://n8n-production-3280.up.railway.app/webhook/auth/login';
-
-        // Make the network request to your n8n workflow
-        const response = await fetch(loginEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-        });
-
-        // Check if the response is valid JSON
-        const contentType = response.headers.get("content-type");
-        if (!response.ok || !contentType || !contentType.includes("application/json")) {
-             const errorText = await response.text();
-             throw new Error(`Authentication failed. Server says: ${errorText || response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        if (data.success && data.token && data.user) {
-            // SUCCESS: Store the REAL user data and the REAL token
-            localStorage.setItem('coaching_user_email', data.user.email);
-            localStorage.setItem('coaching_user_data', JSON.stringify(data.user));
+        // *** CORRECTED LOGIN FUNCTION ***
+        // This function now calls the n8n workflow for real authentication.
+        async function login(event) {
+            event.preventDefault();
             
-            // This is the most important part: store the token for other apps to use
-            localStorage.setItem('auth_token', data.token);
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const loginButton = event.target.querySelector('button[type="submit"]');
 
-            // Show the dashboard with the real user data
-            showDashboard(data.user);
-        } else {
-            // Handle login failure from the server
-            throw new Error(data.message || 'Invalid email or password.');
+            loginButton.disabled = true;
+            loginButton.textContent = 'Signing In...';
+
+            try {
+                const response = await fetch(CONFIG.loginUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const contentType = response.headers.get("content-type");
+                if (!response.ok || !contentType || !contentType.includes("application/json")) {
+                    const errorText = await response.text();
+                    throw new Error(`Authentication failed. Server says: ${errorText || response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success && data.token && data.user) {
+                    // SUCCESS: Store the REAL user data and the REAL token
+                    localStorage.setItem(CONFIG.userEmailKey, data.user.email);
+                    localStorage.setItem(CONFIG.userDataKey, JSON.stringify(data.user));
+                    localStorage.setItem(CONFIG.tokenKey, data.token); // Store the actual token
+
+                    showDashboard(data.user);
+                } else {
+                    throw new Error(data.message || 'Invalid email or password.');
+                }
+
+            } catch (error) {
+                alert(`Login Error: ${error.message}`);
+                console.error('Login failed:', error);
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = 'Sign In';
+            }
         }
-
-    } catch (error) {
-        // Show the error to the user
-        alert(`Login Error: ${error.message}`);
-        console.error('Login failed:', error);
-    } finally {
-        // Re-enable the button
-        loginButton.disabled = false;
-        loginButton.textContent = 'Sign In';
-    }
-}
 
         // Show dashboard
         function showDashboard(user) {
             document.getElementById('loginContainer').classList.add('hidden');
             document.getElementById('dashboard').classList.add('active');
             
-            // Update user info
             document.getElementById('userName').textContent = user.name;
             document.getElementById('userEmail').textContent = user.email;
             document.getElementById('welcomeName').textContent = user.name;
             
-            // Load dashboard data on initial load
             loadDashboardData(user.email);
         }
 
         // Manual refresh function
         function manualRefresh() {
-            const userEmail = localStorage.getItem('coaching_user_email');
+            const userEmail = localStorage.getItem(CONFIG.userEmailKey);
             if (userEmail && !isRefreshing) {
                 loadDashboardData(userEmail);
             }
@@ -898,26 +893,26 @@ async function login(event) {
 
         // Load dashboard data from webhook
         async function loadDashboardData(userEmail) {
-            if (isRefreshing) return; // Prevent multiple simultaneous refreshes
+            if (isRefreshing) return;
             
             isRefreshing = true;
             const refreshBtn = document.getElementById('refreshBtn');
             if (refreshBtn) refreshBtn.disabled = true;
             
             try {
-                const response = await fetch(CONFIG.webhookUrl, {
+                const response = await fetch(CONFIG.dashboardUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        userEmail: userEmail || localStorage.getItem('coaching_user_email')
+                        userEmail: userEmail || localStorage.getItem(CONFIG.userEmailKey)
                     })
                 });
 
                 if (response.ok) {
                     const responseData = await response.json();
-                    dashboardData = Array.isArray(responseData) ? responseData[0] : responseData;
+                    const dashboardData = Array.isArray(responseData) ? responseData[0] : responseData;
                     updateDashboardMetrics(dashboardData);
                     updateLastRefreshTime();
                 } else {
@@ -938,13 +933,11 @@ async function login(event) {
             const now = new Date();
             const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
-            // Update floating time
             const floatUpdate = document.getElementById('lastUpdateFloat');
             if (floatUpdate) {
                 floatUpdate.textContent = 'Last updated: ' + timeString;
             }
             
-            // Update footer sync time
             const footerSync = document.getElementById('footerLastSync');
             if (footerSync) {
                 footerSync.textContent = 'Last sync: ' + timeString;
@@ -954,40 +947,31 @@ async function login(event) {
         // Update dashboard metrics with live data
         function updateDashboardMetrics(data) {
             if (!data || !data.stats) {
-                console.error('Invalid data structure');
+                console.error('Invalid data structure, using fallback.');
+                useFallbackData();
                 return;
             }
 
             const stats = data.stats;
-            const insights = data.insights;
+            const insights = data.insights || {};
 
-            // Update last sync time
-            const now = new Date();
-            document.getElementById('lastSyncTime').textContent = 
-                now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-            // Also update the last refresh time
             updateLastRefreshTime();
 
             // Personality Assessment
             if (stats.assessment) {
                 const assessment = stats.assessment;
-                document.getElementById('kolbeProfile').textContent = assessment.kolbeProfile || '5-6-3-7';
-                
+                document.getElementById('kolbeProfile').textContent = assessment.kolbeProfile || 'N/A';
                 const colorText = assessment.secondaryColor ? 
                     `${assessment.primaryColor}/${assessment.secondaryColor}` : 
-                    assessment.primaryColor || 'Unknown';
+                    assessment.primaryColor || 'N/A';
                 document.getElementById('colorProfile').textContent = colorText;
-                
-                document.getElementById('completionRate').textContent = (insights?.overallHealth || 0) + '%';
-                
+                document.getElementById('completionRate').textContent = (insights.overallHealth || 0) + '%';
                 document.getElementById('assessmentStatus').textContent = assessment.status || 'Incomplete';
                 document.getElementById('assessmentDate').textContent = formatDate(assessment.lastCompleted);
                 
-                const assessmentIndicator = document.getElementById('assessmentIndicator');
-                if (assessmentIndicator) {
-                    assessmentIndicator.className = 'stat-indicator ' + 
-                        (assessment.status === 'Complete' ? 'complete' : 'pending');
+                const indicator = document.getElementById('assessmentIndicator');
+                if (indicator) {
+                    indicator.className = 'stat-indicator ' + (assessment.status === 'Complete' ? 'complete' : 'pending');
                 }
             }
 
@@ -1006,95 +990,66 @@ async function login(event) {
                 document.getElementById('stackToday').textContent = stackSessions.todayStatus || 'Not Started';
                 document.getElementById('stackStreak').textContent = `${stackSessions.streak || 0} days`;
                 
-                const stackIndicator = document.getElementById('stackTodayIndicator');
-                if (stackIndicator) {
-                    stackIndicator.className = 'stat-indicator ' + (todayCompleted ? 'complete' : 'inactive');
+                const indicator = document.getElementById('stackTodayIndicator');
+                if (indicator) {
+                    indicator.className = 'stat-indicator ' + (todayCompleted ? 'complete' : 'inactive');
                 }
             }
 
             // Monthly Fact Maps
             if (stats.factMap) {
                 const factMap = stats.factMap;
-                document.getElementById('factMapDue').textContent = factMap.dueDate || 'Oct 1';
+                document.getElementById('factMapDue').textContent = factMap.dueDate || 'N/A';
                 document.getElementById('factMapDomains').textContent = 
                     `${factMap.domainsComplete || 0}/${factMap.domainsTotal || 4}`;
                 
-                const factMapIndicator = document.getElementById('factMapIndicator');
-                if (factMapIndicator) {
-                    factMapIndicator.className = 'stat-indicator ' + 
-                        (factMap.status === 'Complete' ? 'complete' : 'pending');
+                const indicator = document.getElementById('factMapIndicator');
+                if (indicator) {
+                    indicator.className = 'stat-indicator ' + (factMap.status === 'Complete' ? 'complete' : 'pending');
                 }
             }
 
             // Quarterly Goals
             if (stats.quarterly) {
                 const quarterly = stats.quarterly;
-                document.getElementById('quarterlyStatus').textContent = 
-                    `${quarterly.progress || 0}% Complete`;
-                    
-                if (stats.nextQuarter) {
-                    document.getElementById('quarterlyDays').textContent = 
-                        `Starts in ${stats.nextQuarter.startsInDays || 6} days`;
-                } else {
-                    document.getElementById('quarterlyDays').textContent = 
-                        `${quarterly.daysLeft || 5} days left`;
-                }
-                
-                document.getElementById('quarterlyProgress').textContent = 
-                    `${quarterly.progress || 0}%`;
+                document.getElementById('quarterlyStatus').textContent = `${quarterly.progress || 0}% Complete`;
+                document.getElementById('quarterlyDays').textContent = quarterly.daysLeft !== undefined ? `${quarterly.daysLeft} days left` : 'N/A';
+                document.getElementById('quarterlyProgress').textContent = `${quarterly.progress || 0}%`;
             }
         }
 
         // Use fallback data when API is unavailable
         function useFallbackData() {
-            const fallbackData = {
+            console.warn('Using fallback data for dashboard.');
+            updateDashboardMetrics({
                 stats: {
-                    actionCenter: {
-                        activeCount: 48,
-                        capacityUsed: 148.08,
-                        capacityMax: 40
-                    },
-                    assessment: {
-                        status: 'Complete',
-                        lastCompleted: '2025-09-15',
-                        primaryColor: 'White',
-                        secondaryColor: 'Red',
-                        kolbeProfile: '5-6-3-7'
-                    },
-                    stackSessions: {
-                        todayStatus: 'Not Started',
-                        streak: 2
-                    },
-                    factMap: {
-                        dueDate: 'Oct 1',
-                        domainsComplete: 4,
-                        domainsTotal: 4,
-                        status: 'Complete'
-                    },
-                    quarterly: {
-                        daysLeft: 5,
-                        progress: 0
-                    }
+                    actionCenter: { activeCount: 'N/A', capacityUsed: 'N/A', capacityMax: 40 },
+                    assessment: { status: 'N/A', lastCompleted: null, kolbeProfile: 'N/A', primaryColor: 'N/A' },
+                    stackSessions: { todayStatus: 'N/A', streak: 0 },
+                    factMap: { dueDate: 'N/A', domainsComplete: 0, domainsTotal: 4, status: 'N/A' },
+                    quarterly: { daysLeft: 'N/A', progress: 0 }
                 },
-                insights: {
-                    overallHealth: 45
-                }
-            };
-            updateDashboardMetrics(fallbackData);
+                insights: { overallHealth: 0 }
+            });
         }
 
         // Format date helper
         function formatDate(date) {
             if (!date) return 'Never';
-            const d = new Date(date);
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            return `${months[d.getMonth()]} ${d.getDate()}`;
+            try {
+                const d = new Date(date);
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                return `${months[d.getUTCMonth()]} ${d.getUTCDate()}`;
+            } catch (e) {
+                return 'Invalid Date';
+            }
         }
 
         // Logout function
         function logout() {
-            localStorage.removeItem('coaching_user_email');
-            localStorage.removeItem('coaching_user_data');
+            localStorage.removeItem(CONFIG.userEmailKey);
+            localStorage.removeItem(CONFIG.userDataKey);
+            localStorage.removeItem(CONFIG.tokenKey); // Also clear the token
             
             document.getElementById('loginContainer').classList.remove('hidden');
             document.getElementById('dashboard').classList.remove('active');
@@ -1103,7 +1058,7 @@ async function login(event) {
             document.getElementById('loginPassword').value = '';
         }
 
-        // Open module
+        // Open module in a new tab
         function openModule(url) {
             window.open(url, '_blank');
         }
