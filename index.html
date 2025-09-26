@@ -813,26 +813,66 @@
             }
         }
 
-        // Login function
-        function login(event) {
-            event.preventDefault();
-            
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            // Store user data
-            const userData = {
-                email: email,
-                name: email.split('@')[0].replace('.', ' ').split(' ').map(word => 
-                    word.charAt(0).toUpperCase() + word.slice(1)
-                ).join(' ')
-            };
-            
-            localStorage.setItem('coaching_user_email', email);
-            localStorage.setItem('coaching_user_data', JSON.stringify(userData));
-            
-            showDashboard(userData);
+        // REPLACE the old login function in index (16).html with this one.
+async function login(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    const loginButton = event.target.querySelector('button[type="submit"]');
+
+    // Disable the button to prevent multiple clicks
+    loginButton.disabled = true;
+    loginButton.textContent = 'Signing In...';
+
+    try {
+        // Define the correct API endpoint from your workflow
+        const loginEndpoint = 'https://n8n-production-3280.up.railway.app/webhook/auth/login';
+
+        // Make the network request to your n8n workflow
+        const response = await fetch(loginEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        // Check if the response is valid JSON
+        const contentType = response.headers.get("content-type");
+        if (!response.ok || !contentType || !contentType.includes("application/json")) {
+             const errorText = await response.text();
+             throw new Error(`Authentication failed. Server says: ${errorText || response.statusText}`);
         }
+
+        const data = await response.json();
+
+        if (data.success && data.token && data.user) {
+            // SUCCESS: Store the REAL user data and the REAL token
+            localStorage.setItem('coaching_user_email', data.user.email);
+            localStorage.setItem('coaching_user_data', JSON.stringify(data.user));
+            
+            // This is the most important part: store the token for other apps to use
+            localStorage.setItem('auth_token', data.token);
+
+            // Show the dashboard with the real user data
+            showDashboard(data.user);
+        } else {
+            // Handle login failure from the server
+            throw new Error(data.message || 'Invalid email or password.');
+        }
+
+    } catch (error) {
+        // Show the error to the user
+        alert(`Login Error: ${error.message}`);
+        console.error('Login failed:', error);
+    } finally {
+        // Re-enable the button
+        loginButton.disabled = false;
+        loginButton.textContent = 'Sign In';
+    }
+}
 
         // Show dashboard
         function showDashboard(user) {
