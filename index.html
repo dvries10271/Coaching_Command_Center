@@ -788,7 +788,7 @@
         const CONFIG = {
             loginUrl: 'https://n8n-production-3280.up.railway.app/webhook/auth/login',
             dashboardUrl: 'https://n8n-production-3280.up.railway.app/webhook/dashboard/load-all-stats',
-            refreshInterval: null,
+            refreshInterval: null, // No auto-refresh, only manual and on-load
             tokenKey: 'auth_token',
             userEmailKey: 'coaching_user_email',
             userDataKey: 'coaching_user_data'
@@ -900,19 +900,15 @@
             if (refreshBtn) refreshBtn.disabled = true;
             
             try {
-                const user = JSON.parse(localStorage.getItem(CONFIG.userDataKey));
-                const userId = user ? user.id : null; // Extract the user's ID
-
                 const response = await fetch(CONFIG.dashboardUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                // Add the user_id to the body
-                body: JSON.stringify({
-                    userEmail: userEmail || localStorage.getItem(CONFIG.userEmailKey),
-                    user_id: userId // <-- ADD THIS LINE
-                })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userEmail: userEmail || localStorage.getItem(CONFIG.userEmailKey)
+                    })
+                });
 
                 if (response.ok) {
                     const responseData = await response.json();
