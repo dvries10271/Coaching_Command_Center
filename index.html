@@ -788,7 +788,7 @@
         const CONFIG = {
             loginUrl: 'https://n8n-production-3280.up.railway.app/webhook/auth/login',
             dashboardUrl: 'https://n8n-production-3280.up.railway.app/webhook/dashboard/load-all-stats',
-            refreshInterval: null, // No auto-refresh, only manual and on-load
+            refreshInterval: null,
             tokenKey: 'auth_token',
             userEmailKey: 'coaching_user_email',
             userDataKey: 'coaching_user_data'
@@ -812,7 +812,6 @@
                     const user = JSON.parse(userData);
                     showDashboard(user);
                 } catch (e) {
-                    // If parsing fails, treat as logged out
                     logout();
                 }
             } else {
@@ -821,8 +820,7 @@
             }
         }
 
-        // CORRECTED LOGIN FUNCTION
-        // This function now calls the n8n workflow for real authentication.
+        // Login function
         async function login(event) {
             event.preventDefault();
             
@@ -836,32 +834,26 @@
             try {
                 const response = await fetch(CONFIG.loginUrl, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
 
                 const contentType = response.headers.get("content-type");
                 if (!response.ok || !contentType || !contentType.includes("application/json")) {
                     const errorText = await response.text();
-                    throw new Error(`Authentication failed. Server says: ${errorText || response.statusText}`);
+                    throw new Error(`Authentication failed: ${errorText || response.statusText}`);
                 }
 
                 const data = await response.json();
 
                 if (data.success && data.token && data.user) {
-                    // SUCCESS: Store the REAL user data and the REAL token
                     localStorage.setItem(CONFIG.userEmailKey, data.user.email);
                     localStorage.setItem(CONFIG.userDataKey, JSON.stringify(data.user));
-                    localStorage.setItem(CONFIG.tokenKey, data.token); // Store the actual token
-
+                    localStorage.setItem(CONFIG.tokenKey, data.token);
                     showDashboard(data.user);
                 } else {
                     throw new Error(data.message || 'Invalid email or password.');
                 }
-
             } catch (error) {
                 alert(`Login Error: ${error.message}`);
                 console.error('Login failed:', error);
@@ -891,42 +883,50 @@
             }
         }
 
-        // Load dashboard data from webhook
+        // *** CORRECTED: Load dashboard data function ***
         async function loadDashboardData(userEmail) {
             if (isRefreshing) return;
-            
             isRefreshing = true;
+            
             const refreshBtn = document.getElementById('refreshBtn');
             if (refreshBtn) refreshBtn.disabled = true;
-            
+
             try {
                 const userString = localStorage.getItem(CONFIG.userDataKey);
                 const user = userString ? JSON.parse(userString) : null;
                 const userId = user ? user.id : null;
+                const token = localStorage.getItem(CONFIG.tokenKey); // Get the token
+
+                if (!token) {
+                    throw new Error("Authentication token not found. Please log in again.");
+                }
 
                 const response = await fetch(CONFIG.dashboardUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` // Add the token here
                     },
                     body: JSON.stringify({
-                        userEmail: userEmail || localStorage.getItem(CONFIG.userEmailKey),
+                        userEmail: userEmail,
                         user_id: userId
                     })
                 });
 
-                if (response.ok) {
-                    const responseData = await response.json();
-                    const dashboardData = Array.isArray(responseData) ? responseData[0] : responseData;
-                    updateDashboardMetrics(dashboardData);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const responseData = await response.json();
+                if (responseData.success) {
+                    updateDashboardMetrics(responseData);
                     updateLastRefreshTime();
                 } else {
-                    console.error('Failed to fetch dashboard data, status:', response.status);
-                    useFallbackData();
+                    throw new Error(responseData.message || 'Failed to load data');
                 }
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
-                useFallbackData();
+                useFallbackData(); // Use fallback on error
             } finally {
                 isRefreshing = false;
                 if (refreshBtn) refreshBtn.disabled = false;
@@ -939,17 +939,13 @@
             const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
             const floatUpdate = document.getElementById('lastUpdateFloat');
-            if (floatUpdate) {
-                floatUpdate.textContent = 'Last updated: ' + timeString;
-            }
+            if (floatUpdate) floatUpdate.textContent = 'Last updated: ' + timeString;
             
             const footerSync = document.getElementById('footerLastSync');
-            if (footerSync) {
-                footerSync.textContent = 'Last sync: ' + timeString;
-            }
+            if (footerSync) footerSync.textContent = 'Last sync: ' + timeString;
         }
 
-        // Update dashboard metrics with live data
+        // Update dashboard metrics
         function updateDashboardMetrics(data) {
             if (!data || !data.stats) {
                 console.error('Invalid data structure, using fallback.');
@@ -960,83 +956,72 @@
             const stats = data.stats;
             const insights = data.insights || {};
 
-            // Personality Assessment
+            // Personality
             if (stats.assessment) {
                 const assessment = stats.assessment;
                 document.getElementById('kolbeProfile').textContent = assessment.kolbeProfile || 'N/A';
-                const colorText = assessment.secondaryColor ? 
-                    `${assessment.primaryColor}/${assessment.secondaryColor}` : 
-                    assessment.primaryColor || 'N/A';
-                document.getElementById('colorProfile').textContent = colorText;
-                document.getElementById('completionRate').textContent = (insights.overallHealth || 0) + '%';
+                document.getElementById('colorProfile').textContent = assessment.primaryColor ? `${assessment.primaryColor}/${assessment.secondaryColor}` : 'N/A';
+                document.getElementById('completionRate').textContent = `${insights.overallHealth || 0}%`;
                 document.getElementById('assessmentStatus').textContent = assessment.status || 'Incomplete';
                 document.getElementById('assessmentDate').textContent = formatDate(assessment.lastCompleted);
                 
                 const indicator = document.getElementById('assessmentIndicator');
-                if (indicator) {
-                    indicator.className = 'stat-indicator ' + (assessment.status === 'Complete' ? 'complete' : 'pending');
-                }
+                if (indicator) indicator.className = 'stat-indicator ' + (assessment.status === 'Complete' ? 'complete' : 'pending');
             }
 
-            // Action Command Center
+            // Action Center
             if (stats.actionCenter) {
-                const actionCenter = stats.actionCenter;
-                document.getElementById('activeActions').textContent = actionCenter.activeCount || '0';
-                document.getElementById('actionCapacity').textContent = 
-                    `${Math.round(actionCenter.capacityUsed || 0)}/${actionCenter.capacityMax || 40} hrs`;
+                const ac = stats.actionCenter;
+                document.getElementById('activeActions').textContent = ac.activeCount || 'N/A';
+                document.getElementById('actionCapacity').textContent = `${Math.round(ac.capacityUsed || 0)}/${ac.capacityMax || 40} hrs`;
             }
 
             // Stack Sessions
             if (stats.stackSessions) {
-                const stackSessions = stats.stackSessions;
-                const todayCompleted = stackSessions.todayStatus === 'Complete';
-                document.getElementById('stackToday').textContent = stackSessions.todayStatus || 'Not Started';
-                document.getElementById('stackStreak').textContent = `${stackSessions.streak || 0} days`;
+                const ss = stats.stackSessions;
+                document.getElementById('stackToday').textContent = ss.todayStatus || 'Not Started';
+                document.getElementById('stackStreak').textContent = `${ss.streak || 0} days`;
                 
                 const indicator = document.getElementById('stackTodayIndicator');
-                if (indicator) {
-                    indicator.className = 'stat-indicator ' + (todayCompleted ? 'complete' : 'inactive');
-                }
+                if (indicator) indicator.className = 'stat-indicator ' + (ss.todayStatus === 'Complete' ? 'complete' : 'inactive');
             }
 
-            // Monthly Fact Maps
+            // Fact Map
             if (stats.factMap) {
-                const factMap = stats.factMap;
-                document.getElementById('factMapDue').textContent = factMap.dueDate || 'N/A';
-                document.getElementById('factMapDomains').textContent = 
-                    `${factMap.domainsComplete || 0}/${factMap.domainsTotal || 4}`;
+                const fm = stats.factMap;
+                document.getElementById('factMapDue').textContent = fm.dueDate || 'N/A';
+                document.getElementById('factMapDomains').textContent = `${fm.domainsComplete || 0}/${fm.domainsTotal || 4}`;
                 
                 const indicator = document.getElementById('factMapIndicator');
-                if (indicator) {
-                    indicator.className = 'stat-indicator ' + (factMap.status === 'Complete' ? 'complete' : 'pending');
-                }
+                if (indicator) indicator.className = 'stat-indicator ' + (fm.status === 'Complete' ? 'complete' : 'pending');
             }
 
             // Quarterly Goals
             if (stats.quarterly) {
-                const quarterly = stats.quarterly;
-                document.getElementById('quarterlyStatus').textContent = `${quarterly.progress || 0}% Complete`;
-                document.getElementById('quarterlyDays').textContent = quarterly.daysLeft !== undefined ? `${quarterly.daysLeft} days left` : 'N/A';
-                document.getElementById('quarterlyProgress').textContent = `${quarterly.progress || 0}%`;
+                const qg = stats.quarterly;
+                document.getElementById('quarterlyStatus').textContent = `${qg.progress || 0}% Complete`;
+                document.getElementById('quarterlyDays').textContent = qg.daysLeft !== undefined ? `Starts in ${qg.daysLeft} days` : 'N/A';
+                document.getElementById('quarterlyProgress').textContent = `${qg.progress || 0}%`;
             }
         }
 
-        // Use fallback data when API is unavailable
+        // Use fallback data
         function useFallbackData() {
             console.warn('Using fallback data for dashboard.');
-            updateDashboardMetrics({
+            const fallback = {
                 stats: {
-                    actionCenter: { activeCount: 'N/A', capacityUsed: 'N/A', capacityMax: 40 },
                     assessment: { status: 'N/A', lastCompleted: null, kolbeProfile: 'N/A', primaryColor: 'N/A' },
-                    stackSessions: { todayStatus: 'N/A', streak: 0 },
-                    factMap: { dueDate: 'N/A', domainsComplete: 0, domainsTotal: 4, status: 'N/A' },
-                    quarterly: { daysLeft: 'N/A', progress: 0 }
+                    actionCenter: { activeCount: 'N/A', capacityUsed: 'NaN', capacityMax: 40 },
+                    stackSessions: { todayStatus: 'N/A', streak: 'N/A' },
+                    factMap: { dueDate: 'N/A', domainsComplete: 'N/A', domainsTotal: 4 },
+                    quarterly: { progress: '0', daysLeft: 'N/A' }
                 },
-                insights: { overallHealth: 0 }
-            });
+                insights: { overallHealth: '0' }
+            };
+            updateDashboardMetrics(fallback);
         }
 
-        // Format date helper
+        // Format date
         function formatDate(date) {
             if (!date) return 'Never';
             try {
@@ -1048,11 +1033,11 @@
             }
         }
 
-        // Logout function
+        // Logout
         function logout() {
             localStorage.removeItem(CONFIG.userEmailKey);
             localStorage.removeItem(CONFIG.userDataKey);
-            localStorage.removeItem(CONFIG.tokenKey); // Also clear the token
+            localStorage.removeItem(CONFIG.tokenKey);
             
             document.getElementById('loginContainer').classList.remove('hidden');
             document.getElementById('dashboard').classList.remove('active');
@@ -1061,7 +1046,7 @@
             document.getElementById('loginPassword').value = '';
         }
 
-        // *** CORRECTED: Open module in the SAME window/tab ***
+        // Open module
         function openModule(url) {
             window.location.href = url;
         }
